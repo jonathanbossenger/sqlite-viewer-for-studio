@@ -1,0 +1,15 @@
+{
+  "name": "sqlite-viewer",
+  "version": "1.0.0",
+  "description": "SQLite Database Viewer",
+  "main": "src/main/main.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
+    "dev:vite": "vite",
+    "dev:electron": "wait-on tcp:3000 && electron .",
+    "rebuild": "electron-rebuild -f -w better-sqlite3",
+    "postinstall": "npm run rebuild"
+  },
+  "author": "",
+  "license": "ISC"
+} 
