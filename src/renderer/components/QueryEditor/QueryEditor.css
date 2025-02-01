@@ -1,0 +1,146 @@
+.query-editor-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 0;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.editor-header h3 {
+    margin: 0;
+    color: #2196F3;
+    font-size: 14px;
+}
+
+.editor-header button {
+    padding: 4px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.editor-header button:hover:not(:disabled) {
+    background-color: #45a049;
+}
+
+.editor-header button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.query-textarea {
+    flex: 0 0 60px;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+    resize: none;
+}
+
+.query-textarea:focus {
+    outline: none;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+.error-message {
+    padding: 8px;
+    background-color: #ffebee;
+    color: #c62828;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.results-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.results-table-container {
+    flex: 1;
+    overflow: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.results-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.results-table-container th,
+.results-table-container td {
+    padding: 4px 8px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    white-space: nowrap;
+}
+
+.results-table-container th {
+    background: #f5f5f5;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.results-table-container tr:hover {
+    background: #f8f8f8;
+}
+
+.no-results {
+    padding: 8px;
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+}
+
+.query-history-section h3 {
+    margin: 0 0 0.5rem 0;
+    color: #2196F3;
+    font-size: 12px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.history-item {
+    padding: 4px 8px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.history-item:hover {
+    background: #e0e0e0;
+}
+
+.history-query {
+    font-family: monospace;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-timestamp {
+    font-size: 10px;
+    color: #666;
+    margin-top: 2px;
+} 

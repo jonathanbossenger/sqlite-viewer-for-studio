@@ -1,0 +1,133 @@
+.database-connection {
+    padding: 20px;
+    background-color: white;
+}
+
+.connection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.connection-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #2196F3;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.close-button:hover {
+    background-color: #f5f5f5;
+}
+
+.connection-instructions {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #e3f2fd;
+    border-radius: 4px;
+    color: #1976d2;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.connection-status {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.connection-status.status-connected {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.connection-status.status-error {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.connection-status.status-connecting {
+    background-color: #fff3e0;
+    color: #ef6c00;
+}
+
+.connection-error {
+    margin: 10px 0;
+    padding: 12px;
+    background-color: #ffebee;
+    color: #c62828;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.connect-button {
+    background-color: #2196F3;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.connect-button:hover:not(:disabled) {
+    background-color: #1976D2;
+}
+
+.connect-button:disabled {
+    background-color: #90caf9;
+    cursor: not-allowed;
+}
+
+.recent-connections {
+    margin-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 20px;
+}
+
+.recent-connections h3 {
+    margin: 0 0 10px 0;
+    color: #666;
+}
+
+.recent-connections ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recent-connections li {
+    padding: 10px;
+    margin: 4px 0;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #444;
+    transition: background-color 0.2s;
+}
+
+.recent-connections li:hover {
+    background-color: #e0e0e0;
+} 
