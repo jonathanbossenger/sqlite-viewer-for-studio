@@ -12,7 +12,7 @@
    ```
 4. Install development dependencies:
    ```bash
-   npm install -D @types/react @types/react-dom typescript electron-rebuild
+   npm install -D @babel/core @babel/preset-react @babel/preset-env babel-loader webpack webpack-cli
    ```
 
 ## 2. Project Structure
@@ -21,18 +21,18 @@
    src/
    ├── main/           # Electron main process
    ├── renderer/       # React application
-   ├── shared/         # Shared types and utilities
+   ├── shared/         # Shared utilities
    └── preload/        # Preload scripts
    ```
 
 ## 3. Electron Main Process Setup
-1. Create `src/main/main.ts`:
+1. Create `src/main/main.js`:
    - Set up main window creation
    - Configure IPC handlers for file operations
    - Implement SQLite connection management
    - Set up file watching for database changes
 
-2. Create `src/preload/preload.ts`:
+2. Create `src/preload/preload.js`:
    - Expose required APIs to renderer process
    - Set up IPC communication bridges
 
