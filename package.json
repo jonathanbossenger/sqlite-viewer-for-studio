@@ -113,7 +113,10 @@
       "category": "Development",
       "maintainer": "Studio Team"
     },
-    "publish": null,
+    "publish": {
+      "provider": "github",
+      "releaseType": "draft"
+    },
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
   }
 }
