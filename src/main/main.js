@@ -173,6 +173,45 @@ function setupIpcHandlers() {
   ipcMain.handle('get-query-history', () => {
     return queryHistory
   })
+
+  ipcMain.handle('update-record', async (event, { tableName, record, primaryKey }) => {
+    if (!db) throw new Error('No database connection')
+    
+    try {
+      // Get the table schema to identify primary key if not provided
+      const schema = db.prepare(`PRAGMA table_info("${tableName}")`).all()
+      const pkColumn = primaryKey || schema.find(col => col.pk === 1)?.name
+      
+      if (!pkColumn) {
+        throw new Error('No primary key found for table')
+      }
+      
+      // Build the update query
+      const columns = Object.keys(record)
+      const setClause = columns
+        .filter(col => col !== pkColumn)
+        .map(col => `"${col}" = @${col}`)
+        .join(', ')
+      
+      const query = `
+        UPDATE "${tableName}"
+        SET ${setClause}
+        WHERE "${pkColumn}" = @${pkColumn}
+      `
+      
+      // Execute the update
+      const stmt = db.prepare(query)
+      const result = stmt.run(record)
+      
+      return {
+        success: true,
+        changes: result.changes
+      }
+    } catch (error) {
+      console.error('Update error:', error)
+      throw error
+    }
+  })
 }
 
 function createWindow() {

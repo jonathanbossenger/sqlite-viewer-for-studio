@@ -31,12 +31,17 @@ const App = () => {
   };
 
   const handleRecordSave = async (updatedRecord) => {
-    // TODO: Implement save functionality using IPC
     try {
-      // await window.electron.updateRecord(currentTable, updatedRecord);
-      // Refresh data grid
+      await window.electron.updateRecord(selectedTable, updatedRecord);
+      // Refresh the data grid by forcing a re-render
+      setSelectedRecord(updatedRecord);
+      // Force DataGrid to reload
+      const currentTable = selectedTable;
+      setSelectedTable(null);
+      setTimeout(() => setSelectedTable(currentTable), 0);
     } catch (error) {
       console.error('Failed to update record:', error);
+      alert(`Failed to update record: ${error.message}`);
     }
   };
 

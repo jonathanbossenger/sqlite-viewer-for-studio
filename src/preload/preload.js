@@ -73,6 +73,13 @@ contextBridge.exposeInMainWorld(
       } catch (error) {
         throw error
       }
+    },
+    updateRecord: async (tableName, record, primaryKey) => {
+      try {
+        return await ipcRenderer.invoke('update-record', { tableName, record, primaryKey })
+      } catch (error) {
+        throw error
+      }
     }
   }
 ) 
