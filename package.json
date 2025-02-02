@@ -24,7 +24,7 @@
     "cleanup": "rimraf release/*.blockmap release/*.yaml release/*.yml"
   },
   "author": "",
-  "license": "ISC",
+  "license": "GPL-2.0-or-later",
   "dependencies": {
     "@electron/remote": "^2.1.2",
     "better-sqlite3": "^9.4.0",
