@@ -89,6 +89,9 @@
     font-size: 12px;
     font-weight: 500;
     transition: background-color 0.2s;
+    width: 100%;
+    display: block;
+    margin: 15px 0;
 }
 
 .connect-button:hover:not(:disabled) {

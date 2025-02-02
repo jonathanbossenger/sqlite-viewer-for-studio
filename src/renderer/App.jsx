@@ -6,24 +6,31 @@ import QueryEditor from './components/QueryEditor/QueryEditor';
 import RecordDetails from './components/RecordDetails/RecordDetails';
 import './App.css';
 
+// Helper function to decode HTML entities
+const decodeHtmlEntities = (text) => {
+  if (!text) return text;
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = text;
+  return textarea.value;
+};
+
 const App = () => {
   const [selectedTable, setSelectedTable] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [showConnectionDialog, setShowConnectionDialog] = useState(false);
+  const [showConnectionDialog, setShowConnectionDialog] = useState(true);
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const [currentTable, setCurrentTable] = useState(null);
-
-  const handleTableSelect = (tableName) => {
-    setSelectedTable(tableName);
-    // Clear the selected record when changing tables
-    setSelectedRecord(null);
-  };
+  const [siteName, setSiteName] = useState(null);
 
   const handleConnectionChange = (status) => {
     setIsConnected(status === 'connected');
     if (status === 'connected') {
       setShowConnectionDialog(false);
     }
+  };
+
+  const handleTableSelect = (tableName) => {
+    setSelectedTable(tableName);
+    setSelectedRecord(null);
   };
 
   const handleRecordSelect = (record) => {
@@ -45,10 +52,17 @@ const App = () => {
     }
   };
 
+  const handleSiteNameChange = (name) => {
+    setSiteName(name ? decodeHtmlEntities(name) : null);
+  };
+
   return (
     <div className="app-container">
       <div className="app-toolbar">
-        <div className="toolbar-title">SQLite Database Viewer for Studio</div>
+        <div className="toolbar-title">
+          SQLite Database Viewer for Studio
+          {siteName && <span className="site-name"> - {siteName}</span>}
+        </div>
         <button 
           className="toolbar-button"
           onClick={() => setShowConnectionDialog(true)}
@@ -63,6 +77,7 @@ const App = () => {
             <DatabaseConnection 
               onConnectionChange={handleConnectionChange}
               onClose={() => setShowConnectionDialog(false)}
+              onSiteNameChange={handleSiteNameChange}
             />
           </div>
         </div>

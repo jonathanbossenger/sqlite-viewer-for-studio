@@ -57,6 +57,18 @@ function setupDatabaseWatcher(dbPath) {
   })
 }
 
+// Add function to get WordPress site name
+async function getWordPressSiteName() {
+  if (!db) return null
+  try {
+    const result = db.prepare("SELECT option_value FROM wp_options WHERE option_name = 'blogname' LIMIT 1").get()
+    return result?.option_value || null
+  } catch (error) {
+    console.error('Failed to get site name:', error)
+    return null
+  }
+}
+
 // Modify the database connection functions to include watching
 function connectToDatabase(dbPath, readonly = false) {
   try {
@@ -260,12 +272,17 @@ function setupIpcHandlers() {
       throw error
     }
   })
+
+  ipcMain.handle('get-site-name', async () => {
+    return await getWordPressSiteName()
+  })
 }
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    title: 'SQLite Database Viewer for Studio',
     icon: path.join(__dirname, '../../assets/SQlite viewer icon.png'),
     webPreferences: {
       nodeIntegration: false,

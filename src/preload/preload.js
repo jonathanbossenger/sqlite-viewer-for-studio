@@ -94,6 +94,13 @@ contextBridge.exposeInMainWorld(
       } catch (error) {
         throw error
       }
+    },
+    getSiteName: async () => {
+      try {
+        return await ipcRenderer.invoke('get-site-name')
+      } catch (error) {
+        throw error
+      }
     }
   }
 ) 

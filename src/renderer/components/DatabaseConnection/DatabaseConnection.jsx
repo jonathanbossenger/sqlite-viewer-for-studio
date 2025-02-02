@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './DatabaseConnection.css';
 
-const DatabaseConnection = ({ onConnectionChange, onClose }) => {
+const DatabaseConnection = ({ onConnectionChange, onClose, onSiteNameChange }) => {
     const [connectionStatus, setConnectionStatus] = useState('disconnected');
     const [recentInstallations, setRecentInstallations] = useState([]);
     const [error, setError] = useState(null);
@@ -29,6 +29,11 @@ const DatabaseConnection = ({ onConnectionChange, onClose }) => {
             const result = await window.electron.openDatabaseFile();
             if (result) {
                 setConnectionStatus('connected');
+                // Get site name
+                const siteName = await window.electron.getSiteName();
+                if (siteName) {
+                    onSiteNameChange?.(siteName);
+                }
                 // Refresh recent installations list
                 await loadRecentInstallations();
             } else {
@@ -49,6 +54,11 @@ const DatabaseConnection = ({ onConnectionChange, onClose }) => {
             const result = await window.electron.openRecentDatabase(installation.dbPath);
             if (result) {
                 setConnectionStatus('connected');
+                // Get site name
+                const siteName = await window.electron.getSiteName();
+                if (siteName) {
+                    onSiteNameChange?.(siteName);
+                }
             }
         } catch (error) {
             console.error('Failed to connect to recent installation:', error);

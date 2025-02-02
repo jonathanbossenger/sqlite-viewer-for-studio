@@ -154,4 +154,9 @@
     flex-direction: column;
     gap: 20px;
     min-width: 0; /* Allow panel to shrink below content size */
+}
+
+.site-name {
+    color: #90caf9;
+    font-weight: normal;
 } 
