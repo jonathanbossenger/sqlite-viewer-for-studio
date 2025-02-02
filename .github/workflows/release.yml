@@ -24,8 +24,13 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
         run: npm ci
+
+      - name: Install dependencies (Linux/Windows)
+        if: matrix.os != 'macos-latest'
+        run: npm ci --no-optional
         
       - name: Install system dependencies (Linux only)
         if: matrix.os == 'ubuntu-latest'
