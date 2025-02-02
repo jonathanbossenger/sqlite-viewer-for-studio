@@ -3,7 +3,7 @@ import Button from '../common/Button';
 import './RecordDetails.css';
 
 const RecordDetails = ({ record, tableName, onClose, onSave }) => {
-    const [editedRecord, setEditedRecord] = useState({});
+    const [editedRecord, setEditedRecord] = useState(record || {});
     const [isEditing, setIsEditing] = useState(false);
     const [tableSchema, setTableSchema] = useState([]);
 
@@ -14,8 +14,9 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
     }, [tableName]);
 
     useEffect(() => {
+        // Update editedRecord whenever record prop changes
         if (record) {
-            setEditedRecord(record);
+            setEditedRecord({...record});
         } else if (tableSchema.length > 0) {
             // Create empty record with table columns
             const emptyRecord = {};
@@ -37,6 +38,7 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
     };
 
     const handleInputChange = (field, value) => {
+        console.log('Input change:', field, value); // Debug log
         setEditedRecord(prev => ({
             ...prev,
             [field]: value
@@ -49,7 +51,7 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
             setIsEditing(false);
         } catch (error) {
             console.error('Failed to save record:', error);
-            // TODO: Show error message to user
+            alert('Failed to save record: ' + error.message);
         }
     };
 
@@ -66,7 +68,7 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
     return (
         <div className="record-details">
             <div className="record-details-header">
-                <h3>{tableName} {record ? `Record #${record.id}` : 'New Record'}</h3>
+                <h3>{tableName} Record Details</h3>
                 <div className="record-details-actions">
                     {isEditing ? (
                         <>
@@ -81,7 +83,7 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
                                 variant="secondary" 
                                 size="small" 
                                 onClick={() => {
-                                    setEditedRecord(record || {});
+                                    setEditedRecord({...record});
                                     setIsEditing(false);
                                 }}
                             >
@@ -116,6 +118,7 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
                             onChange={(e) => handleInputChange(column.name, e.target.value)}
                             readOnly={!isEditing}
                             placeholder={column.type}
+                            disabled={!isEditing}
                         />
                     </div>
                 ))}
