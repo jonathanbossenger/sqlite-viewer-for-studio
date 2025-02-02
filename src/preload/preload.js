@@ -101,6 +101,13 @@ contextBridge.exposeInMainWorld(
       } catch (error) {
         throw error
       }
+    },
+    insertRecord: async (tableName, record) => {
+      try {
+        return await ipcRenderer.invoke('insertRecord', { tableName, record })
+      } catch (error) {
+        throw error
+      }
     }
   }
 ) 

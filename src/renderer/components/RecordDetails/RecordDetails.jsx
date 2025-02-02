@@ -4,7 +4,7 @@ import './RecordDetails.css';
 
 const RecordDetails = ({ record, tableName, onClose, onSave }) => {
     const [editedRecord, setEditedRecord] = useState(record || {});
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(record?.isNew || false);
     const [tableSchema, setTableSchema] = useState([]);
 
     useEffect(() => {
@@ -17,6 +17,7 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
         // Update editedRecord whenever record prop changes
         if (record) {
             setEditedRecord({...record});
+            setIsEditing(record.isNew || false);
         } else if (tableSchema.length > 0) {
             // Create empty record with table columns
             const emptyRecord = {};
@@ -24,8 +25,8 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
                 emptyRecord[column.name] = '';
             });
             setEditedRecord(emptyRecord);
+            setIsEditing(false);
         }
-        setIsEditing(false);
     }, [record, tableSchema]);
 
     const loadTableSchema = async () => {
@@ -38,7 +39,6 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
     };
 
     const handleInputChange = (field, value) => {
-        console.log('Input change:', field, value); // Debug log
         setEditedRecord(prev => ({
             ...prev,
             [field]: value
@@ -47,11 +47,31 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
 
     const handleSave = async () => {
         try {
-            await onSave(editedRecord);
+            if (record?.isNew) {
+                // This is a new record, use insert
+                // Remove the isNew flag before sending to database
+                const { isNew, ...recordToSave } = editedRecord;
+                await window.electron.insertRecord(tableName, recordToSave);
+            } else {
+                // This is an existing record, use update
+                await window.electron.updateRecord(tableName, editedRecord);
+            }
+            onSave(editedRecord);
             setIsEditing(false);
         } catch (error) {
             console.error('Failed to save record:', error);
-            alert('Failed to save record: ' + error.message);
+            alert(`Failed to save record: ${error.message}`);
+        }
+    };
+
+    const handleCancel = () => {
+        if (record?.isNew) {
+            // If canceling a new record, close the panel
+            onClose();
+        } else {
+            // If editing existing record, revert changes
+            setEditedRecord({...record});
+            setIsEditing(false);
         }
     };
 
@@ -76,7 +96,7 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
     return (
         <div className="record-details">
             <div className="record-details-header">
-                <h3>{tableName} Record Details</h3>
+                <h3>{record?.isNew ? 'New Record' : 'Record Details'}</h3>
                 <div className="record-details-actions">
                     {isEditing ? (
                         <>
@@ -90,30 +110,29 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
                             <Button 
                                 variant="secondary" 
                                 size="small" 
-                                onClick={() => {
-                                    setEditedRecord({...record});
-                                    setIsEditing(false);
-                                }}
+                                onClick={handleCancel}
                             >
                                 Cancel
                             </Button>
                         </>
                     ) : (
-                        <Button 
-                            variant="secondary" 
-                            size="small" 
-                            onClick={() => setIsEditing(true)}
-                        >
-                            Edit
-                        </Button>
+                        <>
+                            <Button 
+                                variant="secondary" 
+                                size="small" 
+                                onClick={() => setIsEditing(true)}
+                            >
+                                Edit
+                            </Button>
+                            <Button 
+                                variant="secondary" 
+                                size="small" 
+                                onClick={onClose}
+                            >
+                                ×
+                            </Button>
+                        </>
                     )}
-                    <Button 
-                        variant="secondary" 
-                        size="small" 
-                        onClick={onClose}
-                    >
-                        ×
-                    </Button>
                 </div>
             </div>
             <div className="record-details-content">

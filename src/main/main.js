@@ -273,6 +273,36 @@ function setupIpcHandlers() {
     }
   })
 
+  ipcMain.handle('insertRecord', async (event, { tableName, record }) => {
+    if (!db) throw new Error('No database connection')
+    
+    try {
+      // Get the table schema
+      const schema = db.prepare(`PRAGMA table_info("${tableName}")`).all()
+      
+      // Build the insert query
+      const columns = Object.keys(record)
+      const placeholders = columns.map(col => `@${col}`).join(', ')
+      
+      const query = `
+        INSERT INTO "${tableName}" (${columns.join(', ')})
+        VALUES (${placeholders})
+      `
+      
+      // Execute the insert
+      const stmt = db.prepare(query)
+      const result = stmt.run(record)
+      
+      return {
+        success: true,
+        lastInsertId: result.lastInsertRowid
+      }
+    } catch (error) {
+      console.error('Insert error:', error)
+      throw error
+    }
+  })
+
   ipcMain.handle('get-site-name', async () => {
     return await getWordPressSiteName()
   })

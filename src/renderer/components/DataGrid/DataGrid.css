@@ -153,8 +153,23 @@
     cursor: not-allowed;
 }
 
-.pagination button:hover:not(:disabled) {
+.pagination button:not(.new-record-button):hover:not(:disabled) {
     background: #f5f5f5;
+}
+
+.pagination .new-record-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.pagination .new-record-button:hover {
+    background-color: #66bb6a !important;
+}
+
+.pagination .new-record-button:active {
+    background-color: #43a047;
 }
 
 /* Add tooltip styles */
@@ -202,4 +217,10 @@
     padding: 20px !important;
     font-style: italic;
     background-color: #f8f8f8;
+}
+
+.data-grid-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 } 
