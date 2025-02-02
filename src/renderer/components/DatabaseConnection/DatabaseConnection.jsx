@@ -3,13 +3,24 @@ import './DatabaseConnection.css';
 
 const DatabaseConnection = ({ onConnectionChange, onClose }) => {
     const [connectionStatus, setConnectionStatus] = useState('disconnected');
-    const [recentConnections, setRecentConnections] = useState([]);
+    const [recentInstallations, setRecentInstallations] = useState([]);
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        // Load recent installations on mount
+        loadRecentInstallations();
         // Notify parent component of connection status changes
         onConnectionChange?.(connectionStatus);
     }, [connectionStatus, onConnectionChange]);
+
+    const loadRecentInstallations = async () => {
+        try {
+            const installations = await window.electron.getRecentInstallations();
+            setRecentInstallations(installations);
+        } catch (error) {
+            console.error('Failed to load recent installations:', error);
+        }
+    };
 
     const handleDatabaseSelect = async () => {
         try {
@@ -18,8 +29,8 @@ const DatabaseConnection = ({ onConnectionChange, onClose }) => {
             const result = await window.electron.openDatabaseFile();
             if (result) {
                 setConnectionStatus('connected');
-                // Update recent connections
-                setRecentConnections(prev => [...prev, result].slice(-5));
+                // Refresh recent installations list
+                await loadRecentInstallations();
             } else {
                 setConnectionStatus('disconnected');
             }
@@ -30,19 +41,35 @@ const DatabaseConnection = ({ onConnectionChange, onClose }) => {
         }
     };
 
-    const handleRecentConnectionClick = async (connection) => {
+    const handleRecentInstallationClick = async (installation) => {
         try {
             setError(null);
             setConnectionStatus('connecting');
-            const result = await window.electron.openRecentDatabase(connection);
+            // Verify the database file still exists
+            const result = await window.electron.openRecentDatabase(installation.dbPath);
             if (result) {
                 setConnectionStatus('connected');
             }
         } catch (error) {
-            console.error('Failed to connect to recent database:', error);
+            console.error('Failed to connect to recent installation:', error);
             setError(error.message);
             setConnectionStatus('error');
         }
+    };
+
+    const handleRemoveInstallation = async (e, wpDir) => {
+        e.stopPropagation(); // Prevent triggering the click handler of the parent
+        try {
+            await window.electron.removeRecentInstallation(wpDir);
+            await loadRecentInstallations();
+        } catch (error) {
+            console.error('Failed to remove installation:', error);
+        }
+    };
+
+    const formatTimestamp = (timestamp) => {
+        const date = new Date(timestamp);
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
     };
 
     return (
@@ -75,16 +102,32 @@ const DatabaseConnection = ({ onConnectionChange, onClose }) => {
                 {connectionStatus === 'connecting' ? 'Connecting...' : 'Select WordPress Directory'}
             </button>
             
-            {recentConnections.length > 0 && (
+            {recentInstallations.length > 0 && (
                 <div className="recent-connections">
-                    <h3>Recent Connections</h3>
+                    <h3>Recent WordPress Installations</h3>
                     <ul>
-                        {recentConnections.map((connection, index) => (
+                        {recentInstallations.map((installation, index) => (
                             <li 
                                 key={index}
-                                onClick={() => handleRecentConnectionClick(connection)}
+                                onClick={() => handleRecentInstallationClick(installation)}
+                                className="recent-installation-item"
                             >
-                                {connection}
+                                <div className="installation-info">
+                                    <span className="installation-name">{installation.name}</span>
+                                    <span className="installation-path" title={installation.wpDir}>
+                                        {installation.wpDir}
+                                    </span>
+                                    <span className="installation-timestamp">
+                                        {formatTimestamp(installation.timestamp)}
+                                    </span>
+                                </div>
+                                <button
+                                    className="remove-installation-button"
+                                    onClick={(e) => handleRemoveInstallation(e, installation.wpDir)}
+                                    title="Remove from recent installations"
+                                >
+                                    ×
+                                </button>
                             </li>
                         ))}
                     </ul>

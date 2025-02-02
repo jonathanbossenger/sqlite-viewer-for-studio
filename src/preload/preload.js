@@ -80,6 +80,20 @@ contextBridge.exposeInMainWorld(
       } catch (error) {
         throw error
       }
+    },
+    getRecentInstallations: async () => {
+      try {
+        return await ipcRenderer.invoke('get-recent-installations')
+      } catch (error) {
+        throw error
+      }
+    },
+    removeRecentInstallation: async (wpDir) => {
+      try {
+        return await ipcRenderer.invoke('remove-recent-installation', wpDir)
+      } catch (error) {
+        throw error
+      }
     }
   }
 ) 

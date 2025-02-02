@@ -8,6 +8,40 @@ let db = null
 let queryHistory = []
 let dbWatcher = null
 let mainWindow = null
+let store = null
+
+// Initialize electron store
+async function initializeStore() {
+  const Store = await import('electron-store')
+  store = new Store.default({
+    name: 'wp-sqlite-dataview',
+    defaults: {
+      recentInstallations: []
+    }
+  })
+}
+
+// Add function to manage recent WordPress installations
+function addRecentInstallation(wpDir, dbPath) {
+  if (!store) return []
+  
+  const recentInstallations = store.get('recentInstallations', [])
+  const installation = {
+    wpDir,
+    dbPath,
+    name: path.basename(wpDir),
+    timestamp: new Date().toISOString()
+  }
+
+  // Remove if already exists
+  const filtered = recentInstallations.filter(item => item.wpDir !== wpDir)
+  
+  // Add to beginning and keep only last 5
+  const updated = [installation, ...filtered].slice(0, 5)
+  store.set('recentInstallations', updated)
+  
+  return updated
+}
 
 // Add function to setup file watcher
 function setupDatabaseWatcher(dbPath) {
@@ -56,6 +90,8 @@ function setupIpcHandlers() {
       if (fs.existsSync(dbPath)) {
         try {
           connectToDatabase(dbPath)
+          // Add to recent installations
+          addRecentInstallation(wpDir, dbPath)
           return dbPath
         } catch (error) {
           console.error('Failed to open database:', error)
@@ -66,6 +102,18 @@ function setupIpcHandlers() {
       }
     }
     return null
+  })
+
+  ipcMain.handle('get-recent-installations', () => {
+    return store ? store.get('recentInstallations', []) : []
+  })
+
+  ipcMain.handle('remove-recent-installation', (event, wpDir) => {
+    if (!store) return []
+    const recentInstallations = store.get('recentInstallations', [])
+    const updated = recentInstallations.filter(item => item.wpDir !== wpDir)
+    store.set('recentInstallations', updated)
+    return updated
   })
 
   ipcMain.handle('open-recent-database', async (event, dbPath) => {
@@ -239,7 +287,8 @@ function createWindow() {
 }
 
 // This method will be called when Electron has finished initialization
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  await initializeStore()
   setupIpcHandlers()
   const mainWindow = createWindow()
 

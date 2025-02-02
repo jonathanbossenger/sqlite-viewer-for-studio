@@ -109,6 +109,7 @@
 .recent-connections h3 {
     margin: 0 0 10px 0;
     color: #666;
+    font-size: 14px;
 }
 
 .recent-connections ul {
@@ -117,17 +118,62 @@
     margin: 0;
 }
 
-.recent-connections li {
-    padding: 10px;
+.recent-installation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
     margin: 4px 0;
     background-color: #f5f5f5;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 11px;
-    color: #444;
     transition: background-color 0.2s;
 }
 
-.recent-connections li:hover {
-    background-color: #e0e0e0;
+.recent-installation-item:hover {
+    background-color: #e3f2fd;
+}
+
+.installation-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.installation-name {
+    font-weight: 500;
+    color: #2196F3;
+    font-size: 13px;
+}
+
+.installation-path {
+    color: #666;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.installation-timestamp {
+    color: #999;
+    font-size: 10px;
+}
+
+.remove-installation-button {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 16px;
+    padding: 4px 8px;
+    cursor: pointer;
+    margin-left: 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.remove-installation-button:hover {
+    background-color: #ffebee;
+    color: #f44336;
 } 
