@@ -48,14 +48,6 @@ jobs:
           chmod +x scripts/create-icns.sh
           ./scripts/create-icns.sh
 
-      - name: Check current version
-        id: current_version
-        run: echo "current_version=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
-
-      - name: Update version
-        if: ${{ env.current_version != github.event.inputs.version }}
-        run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
-
       - name: Build/release Electron app
         uses: samuelmeuli/action-electron-builder@v1
         with:
