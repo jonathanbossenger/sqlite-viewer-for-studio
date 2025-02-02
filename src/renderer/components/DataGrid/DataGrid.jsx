@@ -4,6 +4,7 @@ import './DataGrid.css';
 
 const DataGrid = ({ tableName, onRecordSelect }) => {
     const [data, setData] = useState({ rows: [], total: 0 });
+    const [schema, setSchema] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [sortColumn, setSortColumn] = useState(null);
@@ -12,9 +13,19 @@ const DataGrid = ({ tableName, onRecordSelect }) => {
 
     useEffect(() => {
         if (tableName) {
+            loadSchema();
             loadData();
         }
     }, [tableName, page, sortColumn, sortDirection]);
+
+    const loadSchema = async () => {
+        try {
+            const result = await window.electron.getTableSchema(tableName);
+            setSchema(result);
+        } catch (error) {
+            console.error('Failed to load schema:', error);
+        }
+    };
 
     const loadData = async () => {
         setLoading(true);
@@ -29,7 +40,6 @@ const DataGrid = ({ tableName, onRecordSelect }) => {
             setData(result);
         } catch (error) {
             console.error('Failed to load data:', error);
-            // TODO: Show error message
         } finally {
             setLoading(false);
         }
@@ -83,18 +93,18 @@ const DataGrid = ({ tableName, onRecordSelect }) => {
                     </button>
                 </div>
             </div>
-
+            
             <div className="data-grid-table-container">
                 <table>
                     <thead>
                         <tr>
-                            {data.rows[0] && Object.keys(data.rows[0]).map(column => (
+                            {schema.map(column => (
                                 <th
-                                    key={column}
-                                    onClick={() => handleSort(column)}
-                                    className={sortColumn === column ? `sorted-${sortDirection}` : ''}
+                                    key={column.name}
+                                    onClick={() => handleSort(column.name)}
+                                    className={sortColumn === column.name ? `sorted-${sortDirection}` : ''}
                                 >
-                                    {column}
+                                    {column.name}
                                 </th>
                             ))}
                         </tr>
@@ -106,13 +116,20 @@ const DataGrid = ({ tableName, onRecordSelect }) => {
                                 onClick={() => handleRowClick(row)}
                                 className="clickable-row"
                             >
-                                {Object.values(row).map((value, i) => (
-                                    <td key={i} title={value}>
-                                        {value}
+                                {schema.map(column => (
+                                    <td key={column.name} title={row[column.name]}>
+                                        {row[column.name]}
                                     </td>
                                 ))}
                             </tr>
                         ))}
+                        {data.rows.length === 0 && (
+                            <tr>
+                                <td colSpan={schema.length} className="no-data-message">
+                                    No data available in this table
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>

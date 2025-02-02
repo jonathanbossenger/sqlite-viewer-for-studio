@@ -194,4 +194,12 @@
     min-width: 100%;
     border-collapse: separate;
     border-spacing: 0;
+}
+
+.no-data-message {
+    text-align: center;
+    color: #666;
+    padding: 20px !important;
+    font-style: italic;
+    background-color: #f8f8f8;
 } 
