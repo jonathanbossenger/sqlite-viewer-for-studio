@@ -218,6 +218,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: path.join(__dirname, '../../assets/SQlite viewer icon.png'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

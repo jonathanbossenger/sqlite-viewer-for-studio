@@ -56,9 +56,11 @@
     "files": [
       "dist/**/*",
       "src/main/**/*",
-      "src/preload/**/*"
+      "src/preload/**/*",
+      "assets/**/*"
     ],
     "mac": {
+      "icon": "assets/AppIcon.icns",
       "target": [
         {
           "target": "dmg",
@@ -76,6 +78,7 @@
       "entitlementsInherit": "build/entitlements.mac.plist"
     },
     "win": {
+      "icon": "assets/SQlite viewer icon.png",
       "target": [
         {
           "target": "nsis",
@@ -88,6 +91,7 @@
       ]
     },
     "linux": {
+      "icon": "assets/SQlite viewer icon.png",
       "target": [
         {
           "target": "AppImage",
