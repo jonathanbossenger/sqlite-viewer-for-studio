@@ -1,4 +1,4 @@
-# SQLite Database Viewer Requirements
+# SQLite Database Viewer for Studio Requirements
 
 ## Overview
 A desktop application built with Electron and React for viewing and editing SQLite databases, with special support for WordPress Studio installations.

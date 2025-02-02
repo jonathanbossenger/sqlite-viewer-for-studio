@@ -48,7 +48,7 @@ const App = () => {
   return (
     <div className="app-container">
       <div className="app-toolbar">
-        <div className="toolbar-title">SQLite Database Viewer</div>
+        <div className="toolbar-title">SQLite Database Viewer for Studio</div>
         <button 
           className="toolbar-button"
           onClick={() => setShowConnectionDialog(true)}
@@ -104,7 +104,7 @@ const App = () => {
           </>
         ) : (
           <div className="welcome-message">
-            <h2>Welcome to SQLite Database Viewer</h2>
+            <h2>Welcome to SQLite Database Viewer for Studio</h2>
             <p>Click "Connect Database" to select a Studio WordPress installation.</p>
           </div>
         )}
