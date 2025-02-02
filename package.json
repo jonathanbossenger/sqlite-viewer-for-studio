@@ -75,7 +75,8 @@
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist"
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "generateUpdatesFilesForAllChannels": false
     },
     "win": {
       "icon": "assets/SQlite viewer icon.png",
@@ -88,7 +89,8 @@
           "target": "portable",
           "arch": ["x64", "ia32"]
         }
-      ]
+      ],
+      "generateUpdatesFilesForAllChannels": false
     },
     "linux": {
       "icon": "assets/SQlite viewer icon.png",
