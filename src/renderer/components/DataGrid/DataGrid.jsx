@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import Loading from '../common/Loading';
 import './DataGrid.css';
 
-const DataGrid = ({ tableName }) => {
-    const [data, setData] = useState([]);
-    const [columns, setColumns] = useState([]);
+const DataGrid = ({ tableName, onRecordSelect }) => {
+    const [data, setData] = useState({ rows: [], total: 0 });
+    const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const [sortColumn, setSortColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState('asc');
-    const [loading, setLoading] = useState(false);
     const rowsPerPage = 50;
 
     useEffect(() => {
         if (tableName) {
-            loadTableData();
-            loadTableSchema();
+            loadData();
         }
     }, [tableName, page, sortColumn, sortDirection]);
 
-    const loadTableData = async () => {
+    const loadData = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
             const result = await window.electron.getTableData({
                 tableName,
                 page,
@@ -28,27 +26,18 @@ const DataGrid = ({ tableName }) => {
                 sortColumn,
                 sortDirection
             });
-            setData(result.rows);
-            setTotalPages(Math.ceil(result.total / rowsPerPage));
+            setData(result);
         } catch (error) {
-            console.error('Failed to load table data:', error);
+            console.error('Failed to load data:', error);
+            // TODO: Show error message
         } finally {
             setLoading(false);
         }
     };
 
-    const loadTableSchema = async () => {
-        try {
-            const schema = await window.electron.getTableSchema(tableName);
-            setColumns(schema.map(col => col.name));
-        } catch (error) {
-            console.error('Failed to load table schema:', error);
-        }
-    };
-
     const handleSort = (column) => {
         if (sortColumn === column) {
-            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+            setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
         } else {
             setSortColumn(column);
             setSortDirection('asc');
@@ -56,31 +45,39 @@ const DataGrid = ({ tableName }) => {
         setPage(1);
     };
 
-    const handlePageChange = (newPage) => {
-        setPage(newPage);
+    const handleRowClick = (row) => {
+        if (onRecordSelect) {
+            onRecordSelect(row);
+        }
     };
 
     if (!tableName) {
-        return <div className="data-grid-placeholder">Select a table to view data</div>;
+        return (
+            <div className="data-grid">
+                <div className="data-grid-placeholder">
+                    Select a table to view data
+                </div>
+            </div>
+        );
     }
 
     return (
         <div className="data-grid">
-            {loading && <div className="loading-overlay">Loading...</div>}
+            {loading && <Loading overlay />}
             
             <div className="data-grid-header">
-                <h3>{tableName} Data</h3>
+                <h3>{tableName}</h3>
                 <div className="pagination">
-                    <button 
-                        onClick={() => handlePageChange(page - 1)}
+                    <button
                         disabled={page === 1}
+                        onClick={() => setPage(p => p - 1)}
                     >
                         Previous
                     </button>
-                    <span>Page {page} of {totalPages}</span>
-                    <button 
-                        onClick={() => handlePageChange(page + 1)}
-                        disabled={page === totalPages}
+                    <span>Page {page}</span>
+                    <button
+                        disabled={data.rows.length < rowsPerPage}
+                        onClick={() => setPage(p => p + 1)}
                     >
                         Next
                     </button>
@@ -91,8 +88,8 @@ const DataGrid = ({ tableName }) => {
                 <table>
                     <thead>
                         <tr>
-                            {columns.map((column) => (
-                                <th 
+                            {data.rows[0] && Object.keys(data.rows[0]).map(column => (
+                                <th
                                     key={column}
                                     onClick={() => handleSort(column)}
                                     className={sortColumn === column ? `sorted-${sortDirection}` : ''}
@@ -103,11 +100,15 @@ const DataGrid = ({ tableName }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {columns.map((column) => (
-                                    <td key={`${rowIndex}-${column}`}>
-                                        {row[column]}
+                        {data.rows.map((row, index) => (
+                            <tr 
+                                key={index}
+                                onClick={() => handleRowClick(row)}
+                                className="clickable-row"
+                            >
+                                {Object.values(row).map((value, i) => (
+                                    <td key={i} title={value}>
+                                        {value}
                                     </td>
                                 ))}
                             </tr>

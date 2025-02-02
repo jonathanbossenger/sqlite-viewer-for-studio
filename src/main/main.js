@@ -6,6 +6,37 @@ const Database = require('better-sqlite3')
 
 let db = null
 let queryHistory = []
+let dbWatcher = null
+let mainWindow = null
+
+// Add function to setup file watcher
+function setupDatabaseWatcher(dbPath) {
+  if (dbWatcher) {
+    dbWatcher.close()
+  }
+
+  dbWatcher = fs.watch(dbPath, (eventType) => {
+    if (eventType === 'change') {
+      // Notify renderer about database changes
+      mainWindow?.webContents.send('database-changed')
+    }
+  })
+}
+
+// Modify the database connection functions to include watching
+function connectToDatabase(dbPath, readonly = false) {
+  try {
+    if (db) {
+      db.close()
+    }
+    db = new Database(dbPath, { readonly })
+    setupDatabaseWatcher(dbPath)
+    return true
+  } catch (error) {
+    console.error('Database connection error:', error)
+    throw error
+  }
+}
 
 // IPC Handlers
 function setupIpcHandlers() {
@@ -24,10 +55,7 @@ function setupIpcHandlers() {
       // Check if the database file exists
       if (fs.existsSync(dbPath)) {
         try {
-          if (db) {
-            db.close()
-          }
-          db = new Database(dbPath, { readonly: false })
+          connectToDatabase(dbPath)
           return dbPath
         } catch (error) {
           console.error('Failed to open database:', error)
@@ -42,14 +70,36 @@ function setupIpcHandlers() {
 
   ipcMain.handle('open-recent-database', async (event, dbPath) => {
     try {
-      if (db) {
-        db.close()
-      }
-      db = new Database(dbPath, { readonly: false })
-      return true
+      return connectToDatabase(dbPath)
     } catch (error) {
       console.error('Failed to open recent database:', error)
       throw error
+    }
+  })
+
+  ipcMain.handle('reconnect-database', async (event, dbPath) => {
+    try {
+      return connectToDatabase(dbPath)
+    } catch (error) {
+      console.error('Failed to reconnect to database:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle('get-database-info', () => {
+    if (!db) throw new Error('No database connection')
+    
+    const dbPath = db.name
+    const stats = fs.statSync(dbPath)
+    const version = db.prepare('SELECT sqlite_version() as version').get()
+    const tableCount = db.prepare("SELECT count(*) as count FROM sqlite_master WHERE type='table'").get()
+    
+    return {
+      path: dbPath,
+      size: stats.size,
+      modified: stats.mtime,
+      version: version.version,
+      tableCount: tableCount.count
     }
   })
 
@@ -126,7 +176,7 @@ function setupIpcHandlers() {
 }
 
 function createWindow() {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
@@ -139,13 +189,13 @@ function createWindow() {
 
   // In development, load from Vite dev server
   if (isDev) {
-    win.loadURL('http://localhost:3000')
-    win.webContents.openDevTools()
+    mainWindow.loadURL('http://localhost:3000')
+    mainWindow.webContents.openDevTools()
   } else {
-    win.loadFile('dist/index.html')
+    mainWindow.loadFile('dist/index.html')
   }
 
-  return win
+  return mainWindow
 }
 
 // This method will be called when Electron has finished initialization
@@ -169,6 +219,9 @@ app.on('window-all-closed', () => {
 
 // Cleanup database connection when app is quitting
 app.on('before-quit', () => {
+  if (dbWatcher) {
+    dbWatcher.close()
+  }
   if (db) {
     db.close()
   }

@@ -3,15 +3,20 @@ import DatabaseConnection from './components/DatabaseConnection/DatabaseConnecti
 import TableExplorer from './components/TableExplorer/TableExplorer';
 import DataGrid from './components/DataGrid/DataGrid';
 import QueryEditor from './components/QueryEditor/QueryEditor';
+import RecordDetails from './components/RecordDetails/RecordDetails';
 import './App.css';
 
 const App = () => {
   const [selectedTable, setSelectedTable] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [showConnectionDialog, setShowConnectionDialog] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [currentTable, setCurrentTable] = useState(null);
 
   const handleTableSelect = (tableName) => {
     setSelectedTable(tableName);
+    // Clear the selected record when changing tables
+    setSelectedRecord(null);
   };
 
   const handleConnectionChange = (status) => {
@@ -21,8 +26,22 @@ const App = () => {
     }
   };
 
+  const handleRecordSelect = (record) => {
+    setSelectedRecord(record);
+  };
+
+  const handleRecordSave = async (updatedRecord) => {
+    // TODO: Implement save functionality using IPC
+    try {
+      // await window.electron.updateRecord(currentTable, updatedRecord);
+      // Refresh data grid
+    } catch (error) {
+      console.error('Failed to update record:', error);
+    }
+  };
+
   return (
-    <div className="app">
+    <div className="app-container">
       <div className="app-toolbar">
         <div className="toolbar-title">SQLite Database Viewer</div>
         <button 
@@ -54,15 +73,29 @@ const App = () => {
               />
             </div>
             
-            <div className="right-panel">
+            <div className="middle-panel">
               <div className="data-panel">
-                <DataGrid tableName={selectedTable} />
+                <DataGrid 
+                  tableName={selectedTable}
+                  onRecordSelect={handleRecordSelect}
+                />
               </div>
               
               <div className="query-panel">
                 <QueryEditor />
               </div>
             </div>
+
+            {selectedRecord && (
+              <div className="details-panel">
+                <RecordDetails
+                  record={selectedRecord}
+                  tableName={selectedTable}
+                  onClose={() => setSelectedRecord(null)}
+                  onSave={handleRecordSave}
+                />
+              </div>
+            )}
           </>
         ) : (
           <div className="welcome-message">

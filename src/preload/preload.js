@@ -53,6 +53,26 @@ contextBridge.exposeInMainWorld(
       } catch (error) {
         throw error
       }
+    },
+    getDatabaseInfo: async () => {
+      try {
+        return await ipcRenderer.invoke('get-database-info')
+      } catch (error) {
+        throw error
+      }
+    },
+    onDatabaseChanged: (callback) => {
+      ipcRenderer.on('database-changed', callback)
+      return () => {
+        ipcRenderer.removeListener('database-changed', callback)
+      }
+    },
+    reconnectDatabase: async (path) => {
+      try {
+        return await ipcRenderer.invoke('reconnect-database', path)
+      } catch (error) {
+        throw error
+      }
     }
   }
 ) 

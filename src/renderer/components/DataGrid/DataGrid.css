@@ -4,6 +4,8 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .data-grid-placeholder {
@@ -34,16 +36,104 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .data-grid-header h3 {
     margin: 0;
 }
 
+.data-grid-table-container {
+    flex: 1;
+    overflow: auto;
+    padding-bottom: 1px;
+    box-sizing: border-box;
+}
+
+.data-grid table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.data-grid th,
+.data-grid td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    white-space: nowrap;
+    min-width: 150px;
+    max-width: 300px;
+}
+
+.data-grid td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+}
+
+.data-grid th:first-child,
+.data-grid td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    border-right: 1px solid #e0e0e0;
+    background-color: #fff;
+    max-width: 100px;
+    min-width: 80px;
+}
+
+.data-grid th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.data-grid th:first-child {
+    z-index: 3;
+    background-color: #f5f5f5 !important;
+}
+
+.data-grid tr:hover td {
+    background-color: #f8f8f8;
+}
+
+.data-grid tr:hover td:first-child {
+    background-color: #f8f8f8;
+}
+
+.data-grid th.sorted-asc::after {
+    content: ' ↑';
+}
+
+.data-grid th.sorted-desc::after {
+    content: ' ↓';
+}
+
+/* Add borders to header cells for better visibility when scrolling */
+.data-grid th:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 25%;
+    height: 50%;
+    width: 1px;
+    background-color: #e0e0e0;
+}
+
+.data-grid th:last-child:after {
+    display: none;
+}
+
 .pagination {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-top: 20px;
+    flex-shrink: 0;
 }
 
 .pagination button {
@@ -63,54 +153,34 @@
     background: #f5f5f5;
 }
 
-.data-grid-table-container {
-    flex: 1;
-    overflow: auto;
-    border: 1px solid #e0e0e0;
+/* Add tooltip styles */
+.data-grid td:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 8px;
     border-radius: 4px;
+    font-size: 12px;
+    white-space: normal;
+    max-width: 400px;
+    word-wrap: break-word;
+    z-index: 1000;
+    pointer-events: none;
 }
 
-.data-grid table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.data-grid th,
-.data-grid td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.data-grid th {
-    background: #f5f5f5;
-    font-weight: 600;
+/* Add to existing styles */
+.clickable-row {
     cursor: pointer;
-    user-select: none;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    transition: background-color 0.2s;
 }
 
-.data-grid th:hover {
-    background: #e0e0e0;
+.clickable-row:hover td {
+    background-color: #f0f7ff !important;
 }
 
-.data-grid th.sorted-asc::after {
-    content: ' ↑';
-}
-
-.data-grid th.sorted-desc::after {
-    content: ' ↓';
-}
-
-.data-grid tr:hover {
-    background: #f8f8f8;
-}
-
-.data-grid td {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
+.clickable-row:hover td:first-child {
+    background-color: #f0f7ff !important;
 } 
