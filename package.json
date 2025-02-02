@@ -8,14 +8,25 @@
     "dev:vite": "vite",
     "dev:electron": "wait-on tcp:3000 && electron .",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
-    "postinstall": "npm run rebuild"
+    "postinstall": "npm run rebuild",
+    "build": "vite build",
+    "build:electron": "electron-builder",
+    "pack": "npm run build && npm run build:electron",
+    "preview": "vite preview",
+    "build:mac": "electron-builder --mac --universal",
+    "build:win": "electron-builder --win --x64 --ia32",
+    "build:linux": "electron-builder --linux deb rpm AppImage --x64 --arm64",
+    "build:all": "electron-builder -mwl",
+    "pack:mac": "npm run build && npm run build:mac",
+    "pack:win": "npm run build && npm run build:win",
+    "pack:linux": "npm run build && npm run build:linux",
+    "pack:all": "npm run build && npm run build:all"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@electron/remote": "^2.1.2",
     "better-sqlite3": "^9.4.0",
-    "electron": "^28.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -24,7 +35,81 @@
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
+    "electron-builder": "^24.9.1",
+    "electron-notarize": "^1.2.2",
+    "dmg-license": "^1.0.11",
     "vite": "^5.0.12",
-    "wait-on": "^7.2.0"
+    "wait-on": "^7.2.0",
+    "electron": "^28.1.0"
+  },
+  "optionalDependencies": {
+    "dmg-builder": "^24.9.1",
+    "electron-installer-debian": "^3.2.0",
+    "electron-installer-redhat": "^3.4.0"
+  },
+  "build": {
+    "appId": "com.studio.sqlite-viewer",
+    "productName": "SQLite Viewer for Studio",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "src/main/**/*",
+      "src/preload/**/*"
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.developer-tools",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64", "ia32"]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "rpm",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "tar.gz",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "Development",
+      "maintainer": "Studio Team"
+    },
+    "publish": null,
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
   }
 }

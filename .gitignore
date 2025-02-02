@@ -17,6 +17,9 @@ node_modules/
 # Electron forge
 out/
 
+# Release
+release/
+
 # Development
 .DS_Store
 .env.local
