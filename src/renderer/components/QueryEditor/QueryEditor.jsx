@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './QueryEditor.css';
 
-const QueryEditor = () => {
+const QueryEditor = ({ onQueryResults }) => {
     const [query, setQuery] = useState('');
-    const [results, setResults] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [queryHistory, setQueryHistory] = useState([]);
@@ -28,7 +27,7 @@ const QueryEditor = () => {
             setLoading(true);
             setError(null);
             const result = await window.electron.executeQuery(query);
-            setResults(result);
+            onQueryResults({ ...result, query: query.trim() });
             
             // Add to history
             setQueryHistory(prev => [
@@ -37,7 +36,7 @@ const QueryEditor = () => {
             ].slice(0, 50)); // Keep last 50 queries
         } catch (error) {
             setError(error.message);
-            setResults(null);
+            onQueryResults(null);
         } finally {
             setLoading(false);
         }
@@ -77,38 +76,6 @@ const QueryEditor = () => {
                 {error && (
                     <div className="error-message">
                         {error}
-                    </div>
-                )}
-
-                {results && (
-                    <div className="results-section">
-                        <div className="results-table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        {results.columns.map((column) => (
-                                            <th key={column}>{column}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {results.rows.map((row, rowIndex) => (
-                                        <tr key={rowIndex}>
-                                            {results.columns.map((column) => (
-                                                <td key={`${rowIndex}-${column}`}>
-                                                    {row[column]}
-                                                </td>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        {results.rows.length === 0 && (
-                            <div className="no-results">
-                                Query executed successfully. No results to display.
-                            </div>
-                        )}
                     </div>
                 )}
             </div>

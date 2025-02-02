@@ -2,21 +2,34 @@ import React, { useState, useEffect } from 'react';
 import Loading from '../common/Loading';
 import './DataGrid.css';
 
-const DataGrid = ({ tableName, onRecordSelect }) => {
+const DataGrid = ({ tableName, onRecordSelect, queryResults = null }) => {
     const [data, setData] = useState({ rows: [], total: 0 });
     const [schema, setSchema] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [sortColumn, setSortColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState('asc');
+    const [sourceTable, setSourceTable] = useState(null);
     const rowsPerPage = 50;
 
     useEffect(() => {
-        if (tableName) {
+        if (queryResults) {
+            // Handle query results
+            setData({ rows: queryResults.rows, total: queryResults.rows.length });
+            setSchema(queryResults.columns.map(col => ({ name: col })));
+            setPage(1);
+            
+            // Try to determine the source table from the query
+            const query = queryResults.query?.toLowerCase() || '';
+            const fromMatch = query.match(/from\s+["`]?(\w+)["`]?/i);
+            const singleTable = fromMatch && !query.includes('join');
+            setSourceTable(singleTable ? fromMatch[1] : null);
+        } else if (tableName) {
             loadSchema();
             loadData();
+            setSourceTable(tableName);
         }
-    }, [tableName, page, sortColumn, sortDirection]);
+    }, [tableName, page, sortColumn, sortDirection, queryResults]);
 
     const loadSchema = async () => {
         try {
@@ -56,8 +69,8 @@ const DataGrid = ({ tableName, onRecordSelect }) => {
     };
 
     const handleRowClick = (row) => {
-        if (onRecordSelect) {
-            onRecordSelect(row);
+        if (onRecordSelect && sourceTable) {
+            onRecordSelect({ ...row, _tableName: sourceTable });
         }
     };
 
@@ -70,7 +83,7 @@ const DataGrid = ({ tableName, onRecordSelect }) => {
         onRecordSelect({ ...emptyRecord, isNew: true });
     };
 
-    if (!tableName) {
+    if (!tableName && !queryResults) {
         return (
             <div className="data-grid">
                 <div className="data-grid-placeholder">
@@ -85,29 +98,31 @@ const DataGrid = ({ tableName, onRecordSelect }) => {
             {loading && <Loading overlay />}
             
             <div className="data-grid-header">
-                <h3>{tableName}</h3>
+                <h3>{queryResults ? 'Query Results' : tableName}</h3>
                 <div className="data-grid-actions">
-                    <div className="pagination">
-                        <button
-                            disabled={page === 1}
-                            onClick={() => setPage(p => p - 1)}
-                        >
-                            Previous
-                        </button>
-                        <span>Page {page}</span>
-                        <button
-                            disabled={data.rows.length < rowsPerPage}
-                            onClick={() => setPage(p => p + 1)}
-                        >
-                            Next
-                        </button>
-                        <button
-                            onClick={handleNewRecord}
-                            className="new-record-button"
-                        >
-                            New Record
-                        </button>
-                    </div>
+                    {!queryResults && (
+                        <div className="pagination">
+                            <button
+                                disabled={page === 1}
+                                onClick={() => setPage(p => p - 1)}
+                            >
+                                Previous
+                            </button>
+                            <span>Page {page}</span>
+                            <button
+                                disabled={data.rows.length < rowsPerPage}
+                                onClick={() => setPage(p => p + 1)}
+                            >
+                                Next
+                            </button>
+                            <button
+                                onClick={handleNewRecord}
+                                className="new-record-button"
+                            >
+                                New Record
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
             
@@ -118,8 +133,8 @@ const DataGrid = ({ tableName, onRecordSelect }) => {
                             {schema.map(column => (
                                 <th
                                     key={column.name}
-                                    onClick={() => handleSort(column.name)}
-                                    className={sortColumn === column.name ? `sorted-${sortDirection}` : ''}
+                                    onClick={() => !queryResults && handleSort(column.name)}
+                                    className={!queryResults && sortColumn === column.name ? `sorted-${sortDirection}` : ''}
                                 >
                                     {column.name}
                                 </th>
@@ -131,7 +146,7 @@ const DataGrid = ({ tableName, onRecordSelect }) => {
                             <tr 
                                 key={index}
                                 onClick={() => handleRowClick(row)}
-                                className="clickable-row"
+                                className={sourceTable ? "clickable-row" : ""}
                             >
                                 {schema.map(column => (
                                     <td key={column.name} title={row[column.name]}>
@@ -143,7 +158,7 @@ const DataGrid = ({ tableName, onRecordSelect }) => {
                         {data.rows.length === 0 && (
                             <tr>
                                 <td colSpan={schema.length} className="no-data-message">
-                                    No data available in this table
+                                    {queryResults ? 'No results from query' : 'No data available in this table'}
                                 </td>
                             </tr>
                         )}

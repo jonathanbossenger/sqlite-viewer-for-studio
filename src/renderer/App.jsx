@@ -20,6 +20,7 @@ const App = () => {
   const [showConnectionDialog, setShowConnectionDialog] = useState(true);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [siteName, setSiteName] = useState(null);
+  const [queryResults, setQueryResults] = useState(null);
 
   const handleConnectionChange = (status) => {
     setIsConnected(status === 'connected');
@@ -31,6 +32,7 @@ const App = () => {
   const handleTableSelect = (tableName) => {
     setSelectedTable(tableName);
     setSelectedRecord(null);
+    setQueryResults(null);
   };
 
   const handleRecordSelect = (record) => {
@@ -39,17 +41,41 @@ const App = () => {
 
   const handleRecordSave = async (updatedRecord) => {
     try {
-      await window.electron.updateRecord(selectedTable, updatedRecord);
+      const { _tableName, ...recordData } = updatedRecord;
+      const targetTable = selectedTable || _tableName;
+      
+      await window.electron.updateRecord(targetTable, recordData);
       // Refresh the data grid by forcing a re-render
       setSelectedRecord(updatedRecord);
-      // Force DataGrid to reload
-      const currentTable = selectedTable;
-      setSelectedTable(null);
-      setTimeout(() => setSelectedTable(currentTable), 0);
+      
+      // If we're viewing a table directly, force a reload
+      if (selectedTable) {
+        const currentTable = selectedTable;
+        setSelectedTable(null);
+        setTimeout(() => setSelectedTable(currentTable), 0);
+      } else {
+        // If we're viewing query results, re-run the query
+        const currentQuery = queryResults.query;
+        setQueryResults(null);
+        setTimeout(async () => {
+          try {
+            const result = await window.electron.executeQuery(currentQuery);
+            setQueryResults({ ...result, query: currentQuery });
+          } catch (error) {
+            console.error('Failed to refresh query results:', error);
+          }
+        }, 0);
+      }
     } catch (error) {
       console.error('Failed to update record:', error);
       alert(`Failed to update record: ${error.message}`);
     }
+  };
+
+  const handleQueryResults = (results) => {
+    setQueryResults(results);
+    setSelectedTable(null);
+    setSelectedRecord(null);
   };
 
   const handleSiteNameChange = (name) => {
@@ -98,11 +124,12 @@ const App = () => {
                 <DataGrid 
                   tableName={selectedTable}
                   onRecordSelect={handleRecordSelect}
+                  queryResults={queryResults}
                 />
               </div>
               
               <div className="query-panel">
-                <QueryEditor />
+                <QueryEditor onQueryResults={handleQueryResults} />
               </div>
             </div>
 
@@ -110,7 +137,7 @@ const App = () => {
               <div className="details-panel">
                 <RecordDetails
                   record={selectedRecord}
-                  tableName={selectedTable}
+                  tableName={selectedTable || selectedRecord._tableName}
                   onClose={() => setSelectedRecord(null)}
                   onSave={handleRecordSave}
                 />
