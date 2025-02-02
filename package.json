@@ -10,17 +10,18 @@
     "rebuild": "electron-rebuild -f -w better-sqlite3",
     "postinstall": "npm run rebuild",
     "build": "vite build",
-    "build:electron": "electron-builder",
+    "build:electron": "electron-builder && npm run cleanup",
     "pack": "npm run build && npm run build:electron",
     "preview": "vite preview",
-    "build:mac": "electron-builder --mac --universal",
-    "build:win": "electron-builder --win --x64 --ia32",
-    "build:linux": "electron-builder --linux deb rpm AppImage --x64 --arm64",
-    "build:all": "electron-builder -mwl",
+    "build:mac": "electron-builder --mac --universal && npm run cleanup",
+    "build:win": "electron-builder --win --x64 --ia32 && npm run cleanup",
+    "build:linux": "electron-builder --linux deb rpm AppImage --x64 --arm64 && npm run cleanup",
+    "build:all": "electron-builder -mwl && npm run cleanup",
     "pack:mac": "npm run build && npm run build:mac",
     "pack:win": "npm run build && npm run build:win",
     "pack:linux": "npm run build && npm run build:linux",
-    "pack:all": "npm run build && npm run build:all"
+    "pack:all": "npm run build && npm run build:all",
+    "cleanup": "rimraf release/*.blockmap release/*.yaml release/*.yml"
   },
   "author": "",
   "license": "ISC",
@@ -35,11 +36,12 @@
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
+    "electron": "^28.1.0",
     "electron-builder": "^24.9.1",
     "electron-notarize": "^1.2.2",
+    "rimraf": "^5.0.10",
     "vite": "^5.0.12",
-    "wait-on": "^7.2.0",
-    "electron": "^28.1.0"
+    "wait-on": "^7.2.0"
   },
   "optionalDependencies": {
     "dmg-builder": "^24.9.1",
@@ -64,11 +66,17 @@
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         },
         {
           "target": "zip",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "category": "public.app-category.developer-tools",
@@ -83,11 +91,17 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "ia32"]
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64", "ia32"]
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         }
       ],
       "generateUpdatesFilesForAllChannels": false
@@ -97,28 +111,42 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         },
         {
           "target": "deb",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         },
         {
           "target": "rpm",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         },
         {
           "target": "tar.gz",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "category": "Development",
       "maintainer": "Studio Team"
     },
-    "publish": {
-      "provider": "github",
-      "releaseType": "draft"
-    },
-    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
+    "publish": null,
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "generateUpdatesFilesForAllChannels": false,
+    "npmRebuild": true,
+    "forceCodeSigning": false,
+    "afterSign": null,
+    "afterAllArtifactBuild": null
   }
 }
