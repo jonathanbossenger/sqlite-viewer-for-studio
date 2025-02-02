@@ -41,21 +41,30 @@
     margin-bottom: 4px;
 }
 
-.record-field input {
+.record-field input,
+.record-field textarea {
     width: 100%;
     padding: 8px;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
     font-size: 12px;
     background-color: white;
+    font-family: inherit;
 }
 
-.record-field input:read-only {
+.record-field textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.record-field input:read-only,
+.record-field textarea:read-only {
     background-color: #f5f5f5;
     cursor: text;
 }
 
-.record-field input:focus {
+.record-field input:focus,
+.record-field textarea:focus {
     outline: none;
     border-color: #2196F3;
     box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);

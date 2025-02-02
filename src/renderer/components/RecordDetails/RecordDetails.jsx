@@ -55,6 +55,14 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
         }
     };
 
+    // Function to determine if a field should use textarea
+    const shouldUseTextarea = (columnName, value) => {
+        // Convert value to string and handle null/undefined
+        const stringValue = String(value || '');
+        // If the value is longer than 100 characters or contains newlines
+        return stringValue.length > 100 || stringValue.includes('\n');
+    };
+
     if (!tableName) {
         return (
             <div className="record-details">
@@ -109,19 +117,35 @@ const RecordDetails = ({ record, tableName, onClose, onSave }) => {
                 </div>
             </div>
             <div className="record-details-content">
-                {tableSchema.map(column => (
-                    <div key={column.name} className="record-field">
-                        <label>{column.name}</label>
-                        <input
-                            type="text"
-                            value={editedRecord[column.name] || ''}
-                            onChange={(e) => handleInputChange(column.name, e.target.value)}
-                            readOnly={!isEditing}
-                            placeholder={column.type}
-                            disabled={!isEditing}
-                        />
-                    </div>
-                ))}
+                {tableSchema.map(column => {
+                    const value = editedRecord[column.name] || '';
+                    const useTextarea = shouldUseTextarea(column.name, value);
+                    
+                    return (
+                        <div key={column.name} className="record-field">
+                            <label>{column.name}</label>
+                            {useTextarea ? (
+                                <textarea
+                                    value={value}
+                                    onChange={(e) => handleInputChange(column.name, e.target.value)}
+                                    readOnly={!isEditing}
+                                    placeholder={column.type}
+                                    disabled={!isEditing}
+                                    rows={5}
+                                />
+                            ) : (
+                                <input
+                                    type="text"
+                                    value={value}
+                                    onChange={(e) => handleInputChange(column.name, e.target.value)}
+                                    readOnly={!isEditing}
+                                    placeholder={column.type}
+                                    disabled={!isEditing}
+                                />
+                            )}
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
