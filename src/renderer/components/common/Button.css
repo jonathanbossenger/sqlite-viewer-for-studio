@@ -2,7 +2,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     transition: all 0.2s ease;
 }
@@ -39,17 +39,17 @@
 /* Sizes */
 .common-button.size-small {
     padding: 6px 12px;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .common-button.size-medium {
     padding: 8px 16px;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .common-button.size-large {
     padding: 12px 24px;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 /* Full width */

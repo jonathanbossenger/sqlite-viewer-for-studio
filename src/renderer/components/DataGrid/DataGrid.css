@@ -14,7 +14,7 @@
     justify-content: center;
     height: 100%;
     color: #666;
-    font-size: 1.2em;
+    font-size: 1em;
 }
 
 .loading-overlay {
@@ -27,7 +27,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2em;
+    font-size: 1em;
     z-index: 1000;
 }
 
@@ -62,7 +62,8 @@
     border-bottom: 1px solid #e0e0e0;
     white-space: nowrap;
     min-width: 150px;
-    max-width: 300px;
+    width: max-content;
+    max-width: 400px;
 }
 
 .data-grid td {
@@ -78,8 +79,9 @@
     z-index: 2;
     border-right: 1px solid #e0e0e0;
     background-color: #fff;
-    max-width: 100px;
     min-width: 80px;
+    width: max-content;
+    max-width: 200px;
 }
 
 .data-grid th {
@@ -90,6 +92,8 @@
     position: sticky;
     top: 0;
     z-index: 1;
+    white-space: nowrap;
+    overflow: visible;
 }
 
 .data-grid th:first-child {
@@ -163,7 +167,7 @@
     color: white;
     padding: 5px 8px;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 10px;
     white-space: normal;
     max-width: 400px;
     word-wrap: break-word;
@@ -183,4 +187,11 @@
 
 .clickable-row:hover td:first-child {
     background-color: #f0f7ff !important;
+}
+
+.data-grid-table-container table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
 } 

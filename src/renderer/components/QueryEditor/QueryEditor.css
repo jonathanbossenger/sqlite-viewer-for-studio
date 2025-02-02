@@ -14,7 +14,7 @@
 .editor-header h3 {
     margin: 0;
     color: #2196F3;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .editor-header button {
@@ -24,7 +24,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .editor-header button:hover:not(:disabled) {
@@ -42,7 +42,7 @@
     border: 1px solid #e0e0e0;
     border-radius: 4px;
     font-family: monospace;
-    font-size: 13px;
+    font-size: 11px;
     resize: none;
 }
 
@@ -57,7 +57,7 @@
     background-color: #ffebee;
     color: #c62828;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .results-section {
@@ -73,7 +73,7 @@
     overflow: auto;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .results-table-container table {
@@ -105,13 +105,13 @@
     padding: 8px;
     text-align: center;
     color: #666;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .query-history-section h3 {
     margin: 0 0 0.5rem 0;
     color: #2196F3;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .history-list {
@@ -133,14 +133,14 @@
 
 .history-query {
     font-family: monospace;
-    font-size: 11px;
+    font-size: 9px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .history-timestamp {
-    font-size: 10px;
+    font-size: 8px;
     color: #666;
     margin-top: 2px;
 } 
