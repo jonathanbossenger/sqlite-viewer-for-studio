@@ -1,4 +1,4 @@
-# SQLite Database Viewer for Studio
+# SQLite Database Viewer for Studio (TM)
 
 <p align="center">
   <img src="assets/SQlite viewer icon.png" width="128" height="128" alt="SQLite Viewer Icon">
