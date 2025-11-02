@@ -1,3 +1,5 @@
+** This repository has been deprecated and archived, and superceeded by [WP SQLite](https://github.com/jonathanbossenger/wp-sqlite)**
+
 # SQLite Database Viewer for Studio (TM)
 
 <p align="center">
